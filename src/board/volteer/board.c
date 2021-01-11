@@ -138,6 +138,16 @@ static void volteer_setup_max98373(void)
 }
 #endif
 
+static int is_board_voxel(void)
+{
+	static const char * const voxel_str = "Voxel";
+	struct cb_mainboard *mainboard =
+		phys_to_virt(lib_sysinfo.cb_mainboard);
+
+	return strncmp(cb_mb_part_string(mainboard),
+			voxel_str, strlen(voxel_str)) == 0;
+}
+
 static int board_setup(void)
 {
 	sysinfo_install_flags(NULL);
@@ -200,6 +210,11 @@ static int board_setup(void)
 		} else {
 			printf("Failed to find eMMC card reader\n");
 		}
+	}
+
+	if (is_board_voxel()) {
+		commandline_append("sof_pci_dev.tplg_path=voxel/");
+		commandline_append("sof_pci_dev.fw_path=voxel/");
 	}
 
 	return 0;
